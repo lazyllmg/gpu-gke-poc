@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gpu-sanity
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: gpu-sanity
+        image: pytorch/pytorch:2.1.0-cuda12.1-cudnn8-runtime
+        command: ["python", "-c"]
+        args:
+          - |
+            import torch, time; t=time.time(); print(torch.cuda.is_available()); print(torch.randn(1,1024,1024).cuda().sum()); print('elapsed', time.time()-t)
+        resources:
+          limits:
+            nvidia.com/gpu: 1
